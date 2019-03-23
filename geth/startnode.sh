@@ -1,0 +1,1 @@
+./geth --syncmode "light" --datadir "../geth-node1" --port 7777 --ipcdisable --networkid 333 --rpcapi eth,web3,personal --rpc --rpcport 8888 --bootnodesv5 "enode://290a4192e513ebc71484a82920d0a0f928a47a19401b1c855ac66832433a0f53dff03f440935c741686349fb85943041c878c0e3df27d5f76395b360125efa3a@172.31.102.81:1111" console

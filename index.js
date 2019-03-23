@@ -10,7 +10,7 @@ let Web3 =  require('web3');
 
 let web3;
  // 服务器环境或者没有安装 Metamask
- web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io/v3/00b6e151612241c49a9730ba48855ee6'));
+ web3 = new Web3(new Web3.providers.WebsocketProvider('https://ropsten.infura.io:8545/v3/00b6e151612241c49a9730ba48855ee6'));
 
 
 //web3.eth.personal.unlockAccount(web3.eth.accounts[0],"5546906..",function(err,result){
@@ -21,30 +21,32 @@ let web3;
 //		console.log(result);
 //	}
 //})
-(async () => {
-	let accounts = await web3.eth.getAccounts();
-
+(() => {
+	let accounts = web3.eth.accounts;
+//	web3.eth.defaultAccount = web3.eth.accounts[0];
 	let ledContract = new web3.eth.Contract(JSON.parse(Led.interface), address);
 	 
-	console.log(accounts);
+	console.log(accounts[0]);
 	
 	
 //	ledContract.events.ReturnLedStatus({
 //	    fromBlock: 0,
 //	    toBlock:'latest'
 //	}, function(error, event){ 
-//		console.log(event);
+//		console.log(error,event);
 //		LedOn();
-		//myreadFile();
+//		myreadFile();
 //   });
 	ledContract.events.ReturnLedStatus({
-	   	filter: {_from: '0x75BAC73801Feacf14D57c01749E8C1DA08F2974c'},
-	   fromBlock:'latest'
+	   	filter: {},
+	   fromBlock:0
 	},function(error, event) {
-	   //console.log(event);
+	   console.log(error,event);
 		LedOn();
-		//myreadFile();
-	})
+		myreadFile();
+	}).on('data', (event) => {console.log(event)})
+	  .on('change', (event) => {console.log(event)})
+  	  .on('error', (event) => {console.log(event)})
 	
 	function LedOn(){
 		led.open(Gpio.OUTPUT,Gpio.LOW);
@@ -54,17 +56,17 @@ let web3;
 		led.close();
 	}
 	
-	//function myreadFile(){
+	function myreadFile(){
 		//unlock	
 	//	web3.personal.unlockAccount(web3.eth.accounts[0],"877095605521");
-		//fs.readFile('/sys/bus/w1/devices/28-020b92456572/w1_slave','utf-8',function(err,fd){
-			//tem = fd.slice(-6,-1);
-			//tem = parseInt(tem);
-			//tem = tem/1000;
-			//iotproject.updateTemp(tem);
-			//console.log("current temp:%d",tem);
-			//})
-//}
+		fs.readFile('/sys/bus/w1/devices/28-020b92456572/w1_slave','utf-8',function(err,fd){
+			tem = fd.slice(-6,-1);
+			tem = parseInt(tem);
+			tem = tem/1000;
+			//ledContract.updateTemp(tem);
+			console.log("current temp:%d",tem);
+		})
+}
 })()
 
 
